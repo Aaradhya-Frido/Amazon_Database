@@ -13,7 +13,7 @@ load_dotenv()
 
 
 # Get the JSON content from the environment variable
-google_auth = json.loads(os.getenv('GOOGLE_AUTH'))
+google_auth = st.secrets["GOOGLE_AUTH"]
 
 # Initialize Google Sheets API using the loaded credentials
 creds = Credentials.from_service_account_info(google_auth)
