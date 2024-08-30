@@ -10,3 +10,4 @@ numpy>=1.24.2
 openpyxl
 python-dotenv
 gspread_dataframe
+dotenv
