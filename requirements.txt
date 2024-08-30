@@ -1,0 +1,12 @@
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+gspread
+oauth2client
+streamlit>=1.22.0
+pandas>=1.5.0
+numpy>=1.24.2
+openpyxl
+python-dotenv
+gspread_dataframe
