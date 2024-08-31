@@ -9,5 +9,5 @@ pandas
 numpy
 openpyxl
 gspread_dataframe
-dotenv
+dotenv==0.0.5
 python-dotenv
