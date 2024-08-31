@@ -188,12 +188,12 @@ def clean_and_convert_columns(df):
 def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mapping, campaign_mapping, selected_date):
     """Process and merge the uploaded files with existing data."""
     # Load existing data
-    TO_existing_data = pd.DataFrame(gc.open("Business_Order_Report").sheet1.get_all_values()[1:], columns=gc.open("Business_Order_Report").sheet1.get_all_values()[0])
-    OR_existing_data = pd.DataFrame(gc.open("Order_Report").sheet1.get_all_values()[1:], columns=gc.open("Order_Report").sheet1.get_all_values()[0])
-    RO_existing_data = pd.DataFrame(gc.open("Return_Order_Report").sheet1.get_all_values()[1:], columns=gc.open("Return_Order_Report").sheet1.get_all_values()[0])
-    sp_existing_data = pd.DataFrame(gc.open("Database_SP").sheet1.get_all_values()[1:], columns=gc.open("Database_SP").sheet1.get_all_values()[0])
-    sd_existing_data = pd.DataFrame(gc.open("Database_SD").sheet1.get_all_values()[1:], columns=gc.open("Database_SD").sheet1.get_all_values()[0])
-    sb_existing_data = pd.DataFrame(gc.open("Database_SB").sheet1.get_all_values()[1:], columns=gc.open("Database_SB").sheet1.get_all_values()[0])
+    TO_existing_data = pd.DataFrame(gc.open("Business_Report_DB").sheet1.get_all_values()[1:], columns=gc.open("Business_Report_DB").sheet1.get_all_values()[0])
+    OR_existing_data = pd.DataFrame(gc.open("Order_Report_DB_DB").sheet1.get_all_values()[1:], columns=gc.open("Order_Report_DB").sheet1.get_all_values()[0])
+    RO_existing_data = pd.DataFrame(gc.open("Return_Order_Report_DB").sheet1.get_all_values()[1:], columns=gc.open("Return_Order_Report_DB").sheet1.get_all_values()[0])
+    sp_existing_data = pd.DataFrame(gc.open("Database_SP_DB").sheet1.get_all_values()[1:], columns=gc.open("Database_SP").sheet1.get_all_values()[0])
+    sd_existing_data = pd.DataFrame(gc.open("Database_SD_DB").sheet1.get_all_values()[1:], columns=gc.open("Database_SD").sheet1.get_all_values()[0])
+    sb_existing_data = pd.DataFrame(gc.open("Database_SB_DB").sheet1.get_all_values()[1:], columns=gc.open("Database_SB").sheet1.get_all_values()[0])
         
 
 
@@ -234,12 +234,12 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     updated_SB_files = pd.concat([sb_existing_data, sb_file_df], ignore_index=True)
 
     # Update Google Sheets
-    update_google_sheet("Business_Order_Report", updated_TO_files)
-    update_google_sheet("Order_Report", updated_OR_files)
-    update_google_sheet("Return_Order_Report", updated_RO_files)
+    update_google_sheet("Business_Report_DB", updated_TO_files)
+    update_google_sheet("Order_Report_DB", updated_OR_files)
+    update_google_sheet("Return_Order_Report_DB", updated_RO_files)
     update_google_sheet("Database_SP", updated_SP_files)
     update_google_sheet("Database_SD", updated_SD_files)
-    update_google_sheet("Database_SB", updated_SB_files)
+    update_google_sheet("Database_SB_DB", updated_SB_files)
 
     # Map ASIN and generate summaries
     merged_data_TO = pd.merge(TO_file_df, asin_mapping, left_on='(Child) ASIN', right_on='ASIN', how='left')
@@ -371,12 +371,12 @@ if st.button("Process"):
     )
 
     # Update Google Sheets with the summary DataFrames
-    update_google_sheet("Total_Order_Summary", TO_Summary)
-    update_google_sheet("Daily_Order_Summary", OR_summary)
-    update_google_sheet("Daily_Return_Summary", RO_summary)
-    update_google_sheet("SP_Summary", SP_summary)
-    update_google_sheet("SD_Summary", SD_summary)
-    update_google_sheet("SB_Summary", SB_summary)
+    update_google_sheet("Total_Order_Summary_DB", TO_Summary)
+    update_google_sheet("Daily_Order_Summary_DB", OR_summary)
+    update_google_sheet("Daily_Return_Summary_DB", RO_summary)
+    update_google_sheet("SP_Summary_DB", SP_summary)
+    update_google_sheet("SD_Summary_DB", SD_summary)
+    update_google_sheet("SB_Summary_DB", SB_summary)
 
 else:
     st.warning("Please upload all required files (Total Order,SP, SD, SB).")
