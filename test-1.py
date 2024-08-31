@@ -10,13 +10,13 @@ from google.oauth2.service_account import Credentials
 import os
 import json
 load_dotenv()
-
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Get the JSON content from the environment variable
 google_auth = st.secrets["GOOGLE_AUTH"]
 
 # Initialize Google Sheets API using the loaded credentials
-creds = Credentials.from_service_account_info(google_auth)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(google_auth)
 gc = gspread.authorize(creds)
 
 
