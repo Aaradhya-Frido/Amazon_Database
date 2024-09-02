@@ -191,7 +191,7 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     TO_existing_data = pd.DataFrame(gc.open("Business_Report_DB").sheet1.get_all_values()[1:], columns=gc.open("Business_Report_DB").sheet1.get_all_values()[0])
     OR_existing_data = pd.DataFrame(gc.open("Order_Report_DB").sheet1.get_all_values()[1:], columns=gc.open("Order_Report_DB").sheet1.get_all_values()[0])
     RO_existing_data = pd.DataFrame(gc.open("Return_Order_Report_DB").sheet1.get_all_values()[1:], columns=gc.open("Return_Order_Report_DB").sheet1.get_all_values()[0])
-    sp_existing_data = pd.DataFrame(gc.open("Database_SP_DB").sheet1.get_all_values()[1:], columns=gc.open("Database_SP").sheet1.get_all_values()[0])
+    sp_existing_data = pd.DataFrame(gc.open("Database_SP_DB-1").sheet1.get_all_values()[1:], columns=gc.open("Database_SP").sheet1.get_all_values()[0])
     sd_existing_data = pd.DataFrame(gc.open("Database_SD_DB").sheet1.get_all_values()[1:], columns=gc.open("Database_SD").sheet1.get_all_values()[0])
     sb_existing_data = pd.DataFrame(gc.open("Database_SB_DB").sheet1.get_all_values()[1:], columns=gc.open("Database_SB").sheet1.get_all_values()[0])
         
@@ -237,7 +237,7 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     update_google_sheet("Business_Report_DB", updated_TO_files)
     update_google_sheet("Order_Report_DB", updated_OR_files)
     update_google_sheet("Return_Order_Report_DB", updated_RO_files)
-    update_google_sheet("Database_SP_DB", updated_SP_files)
+    update_google_sheet("Database_SP_DB-1", updated_SP_files)
     update_google_sheet("Database_SD_DB", updated_SD_files)
     update_google_sheet("Database_SB_DB", updated_SB_files)
 
