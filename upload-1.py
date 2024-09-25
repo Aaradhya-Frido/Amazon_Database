@@ -164,7 +164,7 @@ def clean_and_convert_columns(df):
     
     return aggregated_df
 
-def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mapping, campaign_mapping, selected_date):
+def process_files(to_file,expense_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mapping, campaign_mapping, selected_date):
     """Process and merge the uploaded files with existing data."""
     # Load existing data
     TO_existing_data = pd.DataFrame(gc.open("Business_Order_Report").sheet1.get_all_values()[1:], columns=gc.open("Business_Order_Report").sheet1.get_all_values()[0])
@@ -173,9 +173,11 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     sp_existing_data = pd.DataFrame(gc.open("Database_SP").sheet1.get_all_values()[1:], columns=gc.open("Database_SP").sheet1.get_all_values()[0])
     sd_existing_data = pd.DataFrame(gc.open("Database_SD").sheet1.get_all_values()[1:], columns=gc.open("Database_SD").sheet1.get_all_values()[0])
     sb_existing_data = pd.DataFrame(gc.open("Database_SB").sheet1.get_all_values()[1:], columns=gc.open("Database_SB").sheet1.get_all_values()[0])
-        
+    Expense_existing_data = pd.DataFrame(gc.open("Expenses Tables").sheet1.get_all_values()[1:], columns=gc.open("Expenses Tables").sheet1.get_all_values()[0])
 
-
+    #Read Expense Report
+    expense_files = [read_file(file) for file in expense_file]
+    expense_file_df = pd.concat(expense_files, ignore_index=True)   
     # Read SP Files
     sp_dfs = [read_file_asin(file) for file in sp_file]
     sp_file_df = pd.concat(sp_dfs, ignore_index=True)
@@ -201,7 +203,7 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
 
     # Add selected date
     selected_date_str = selected_date.strftime('%Y-%m-%d')
-    for df in [TO_file_df, OR_file_df,RO_file_df,sp_file_df, sd_file_df, sb_file_df]:
+    for df in [TO_file_df, OR_file_df,RO_file_df,sp_file_df, sd_file_df, sb_file_df,expense_file_df]:
         df['Selected Date'] = selected_date_str
 
     # Merge new data with existing data
@@ -211,6 +213,7 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     updated_SP_files = pd.concat([sp_existing_data, sp_file_df], ignore_index=True)
     updated_SD_files = pd.concat([sd_existing_data, sd_file_df], ignore_index=True)
     updated_SB_files = pd.concat([sb_existing_data, sb_file_df], ignore_index=True)
+    updated_expense_files = pd.concat([Expense_existing_data, expense_file_df], ignore_index=True)
 
     # Update Google Sheets
     update_google_sheet("Business_Order_Report", updated_TO_files)
@@ -219,6 +222,7 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     update_google_sheet("Database_SP", updated_SP_files)
     update_google_sheet("Database_SD", updated_SD_files)
     update_google_sheet("Database_SB", updated_SB_files)
+    update_google_sheet("Expenses Tables", updated_expense_files)
 
     # Map ASIN and generate summaries
     merged_data_TO = pd.merge(TO_file_df, asin_mapping, left_on='(Child) ASIN', right_on='ASIN', how='left')
@@ -226,7 +230,9 @@ def process_files(to_file,or_file,ro_file ,sp_file, sd_file, sb_file, asin_mappi
     merged_data_SB = pd.merge(sb_file_df, campaign_mapping, left_on='Campaigns', right_on='SB Campaign Name', how='left')
     merged_data_SD = pd.merge(sd_file_df, asin_mapping, left_on='Advertised ASIN', right_on='ASIN', how='left')
 
+    
     TO_summary = merged_data_TO
+    Expense_summary = updated_expense_files
     OR_summary = updated_OR_files
     RO_summary = updated_RO_files
     SP_summary = aggregate_data_asin(merged_data_SP, {
@@ -274,17 +280,18 @@ asin_mapping = pd.read_csv("ASIN_Mapping_Report.csv")
 campaign_mapping = pd.read_csv("Campaign_Mapping.csv")
 
 
-TO_file = st.file_uploader("**Choose an Business Order Report file**", type=["xlsx", "csv", "txt", "tsv"], accept_multiple_files=True)
+TO_file = st.file_uploader("**Choose a Business Order Report file**", type=["xlsx", "csv", "txt", "tsv"], accept_multiple_files=True)
 OR_file = st.file_uploader("**Choose an Order Report file ( With order ID's)**", type=["xlsx", "csv", "txt", "tsv"], accept_multiple_files=True)
-RO_file = st.file_uploader("**Choose an Return Order Report file**", type=["xlsx", "csv", "txt", "tsv"], accept_multiple_files=True)
-SP_file = st.file_uploader("**Choose an Sponsor Product file**", type=["xlsx", "csv"], accept_multiple_files=True)
-SD_file = st.file_uploader("**Choose an Sponsor Display file**", type=["xlsx", "csv"], accept_multiple_files=True)
-SB_file = st.file_uploader("**Choose an Sponsor Brand file**", type=["xlsx", "csv"], accept_multiple_files=True)
-
+RO_file = st.file_uploader("**Choose a Return Order Report file**", type=["xlsx", "csv", "txt", "tsv"], accept_multiple_files=True)
+SP_file = st.file_uploader("**Choose a Sponsor Product file**", type=["xlsx", "csv"], accept_multiple_files=True)
+SD_file = st.file_uploader("**Choose a Sponsor Display file**", type=["xlsx", "csv"], accept_multiple_files=True)
+SB_file = st.file_uploader("**Choose a Sponsor Brand file**", type=["xlsx", "csv"], accept_multiple_files=True)
+expense_file = st.file_uploader("**Choose a Repository Report file**", type=["xlsx", "csv", "txt", "tsv"], accept_multiple_files=True)
 
 if st.button("Process"):
-    TO_Summary,OR_summary,RO_summary,SP_summary, SD_summary, SB_summary = process_files(
+    TO_Summary,Expense_Summary,OR_summary,RO_summary,SP_summary, SD_summary, SB_summary = process_files(
         TO_file,
+        expense_file,
         OR_file,
         RO_file,
         SP_file,
@@ -318,7 +325,7 @@ if st.button("Process"):
     st.write("SP files have been updated and merged.")
     st.write("SD files have been updated and merged.")
     st.write("SB files have been updated and merged.")
-
+    st.write("Expense files have been updated and merged.")
     # Provide download links for the summary files
     st.download_button(
         label="Download Updated Total Order Summary",
@@ -357,13 +364,13 @@ if st.button("Process"):
         mime="text/csv"
     )
 
-    # Update Google Sheets with the summary DataFrames
-    update_google_sheet("Total_Order_Summary", TO_Summary)
-    update_google_sheet("Daily_Order_Summary", OR_summary)
-    update_google_sheet("Daily_Return_Summary", RO_summary)
-    update_google_sheet("SP_Summary", SP_summary)
-    update_google_sheet("SD_Summary", SD_summary)
-    update_google_sheet("SB_Summary", SB_summary)
+    # # Update Google Sheets with the summary DataFrames
+    # update_google_sheet("Total_Order_Summary", TO_Summary)
+    # update_google_sheet("Daily_Order_Summary", OR_summary)
+    # update_google_sheet("Daily_Return_Summary", RO_summary)
+    # update_google_sheet("SP_Summary", SP_summary)
+    # update_google_sheet("SD_Summary", SD_summary)
+    # update_google_sheet("SB_Summary", SB_summary)
 
 else:
     st.warning("Please upload all required files (Total Order,SP, SD, SB).")
